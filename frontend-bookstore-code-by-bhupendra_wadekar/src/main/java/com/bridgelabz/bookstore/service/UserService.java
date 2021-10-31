@@ -6,6 +6,7 @@ import com.bridgelabz.bookstore.request.LoginInformation;
 import com.bridgelabz.bookstore.request.PasswordUpdate;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface UserService {
 
@@ -18,5 +19,6 @@ public interface UserService {
         boolean update(PasswordUpdate information, String token);
         List<Users> getUsers();
         Users getSingleUser(String token);
+        Optional<Users> getUserById(Long id );
     }
 

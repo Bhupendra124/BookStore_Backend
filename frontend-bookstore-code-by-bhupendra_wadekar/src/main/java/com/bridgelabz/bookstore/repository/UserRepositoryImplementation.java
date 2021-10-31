@@ -1,8 +1,7 @@
 
-package com.bridgelabz.bookstore.repository.Implementation;
+package com.bridgelabz.bookstore.repository;
 
 import com.bridgelabz.bookstore.entity.Users;
-import com.bridgelabz.bookstore.repository.IUserRepository;
 import com.bridgelabz.bookstore.request.PasswordUpdate;
 import org.hibernate.Session;
 import org.hibernate.query.Query;
@@ -95,5 +94,7 @@ public class UserRepositoryImplementation implements IUserRepository {
 		List<Users> usersList = currentsession.createQuery("from Users").getResultList();
 		return  usersList;
 	}
+
+
 
 }

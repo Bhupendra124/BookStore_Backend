@@ -1,13 +1,13 @@
 /**
- * 
+ *
  */
 package com.bridgelabz.bookstore.Implemintation;
 
 import com.bridgelabz.bookstore.dto.UserDto;
 import com.bridgelabz.bookstore.entity.Users;
-import com.bridgelabz.bookstore.entity.userRole;
 import com.bridgelabz.bookstore.exception.UserException;
 import com.bridgelabz.bookstore.repository.IUserRepository;
+import com.bridgelabz.bookstore.repository.UserRepository;
 import com.bridgelabz.bookstore.request.LoginInformation;
 import com.bridgelabz.bookstore.request.PasswordUpdate;
 import com.bridgelabz.bookstore.response.EmailData;
@@ -26,6 +26,7 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Log4j2
@@ -44,7 +45,9 @@ public class UserServiceImplementation implements UserService {
 
 	@Autowired
 	private MailResponse response;
-	
+
+	@Autowired
+	UserRepository userRepo;
 
 //	userRole =new userRole();
 //	@Autowired
@@ -57,6 +60,10 @@ public class UserServiceImplementation implements UserService {
 	@Autowired
 	private EmailData emailData;
 
+	@Override
+	public Optional<Users> getUserById(Long userId) {
+		return userRepo.findById(userId);
+	}
 
 	@Override
 	public Users login(LoginInformation information) {
@@ -80,19 +87,19 @@ public class UserServiceImplementation implements UserService {
 			users.setVerified(false);
 			// calling the save method
 			users = repository.save(users);
-			String mailResponse = 
+			String mailResponse =
 					"http://localhost:8080/user/verify/"+
-					generate.jwtToken(users.getUserId());
+							generate.jwtToken(users.getUserId());
 			// setting the data to mail
 
 //			mailObject.setEmail(information.getEmail());
 //			mailObject.setMessage(mailResponse);
 //			mailObject.setSubject("Verification");
 //			rabbitMQSender.send(mailObject);
-					emailData.setEmail(users.getEmail());
-					emailData.setSubject("your Registration is successful");
-					emailData.setBody(mailResponse);
-					em.sendMail(emailData.getEmail(), emailData.getSubject(), emailData.getBody());
+			emailData.setEmail(users.getEmail());
+			emailData.setSubject("your Registration is successful");
+			emailData.setBody(mailResponse);
+			em.sendMail(emailData.getEmail(), emailData.getSubject(), emailData.getBody());
 			System.out.println(mailResponse);
 			return true;
 		} else {
@@ -128,7 +135,7 @@ public class UserServiceImplementation implements UserService {
 //	}
 
 	/**
-	 * This is validate the token based on there role and 
+	 * This is validate the token based on there role and
 	 * @param role
 	 * @param token
 	 * @return
@@ -174,7 +181,7 @@ public class UserServiceImplementation implements UserService {
 
 	/**
 	 * Verifying the user based on there token
-	 * 
+	 *
 	 * @param
 	 * @return generated token
 	 */
@@ -200,7 +207,7 @@ public class UserServiceImplementation implements UserService {
 		try {
 			Users user = repository.getUser(email);
 			if (user.isVerified() == true) {
-				String mailResponse = response.formMessage("http://localhost:4200/update-password",
+				String mailResponse = response.formMessage("http://localhost:3000/update-password",
 						generate.jwtToken(user.getUserId()));
 				System.out.println(mailResponse);
 				MailServiceProvider.sendEmail(user.getEmail(), "Reset Your Password", mailResponse);
@@ -262,10 +269,10 @@ public class UserServiceImplementation implements UserService {
 		} catch (Exception e) {
 			throw new UserException("User doesn't exist");
 		}
-		
+
 		if(isValidToken("admin", token)) {
-		Users user = repository.getUserById(id);
-		return user;
+			Users user = repository.getUserById(id);
+			return user;
 		}else {
 			throw new UserException("token is not valid");
 		}

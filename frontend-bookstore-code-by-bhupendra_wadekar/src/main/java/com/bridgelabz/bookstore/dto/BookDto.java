@@ -7,12 +7,11 @@ import org.springframework.stereotype.Component;
 @Data
 @Component
 public class BookDto {
-	private String bookName;
-	private Long noOfBooks;
-	private Double price;
-	private String authorName;
-	private String image;
-	private String bookDetails;
-	private String userId;
+	public String name;
+	public String author;
+	public String description;
+	public String logo;
+	public Float price;
+	public Long quantity;
 	
 }
